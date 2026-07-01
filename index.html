@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Armstrong - Registro de Asistentes</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --armstrong-blue: #0194d2;
+      --armstrong-gradient: linear-gradient(135deg, #0b4f8c 0%, #0194d2 100%);
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --text-white: #ffffff;
+      --text-muted: #b0c4de;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      box-sizing: border-box;
+      background: url('bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .main-content {
+      flex: 1 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 0;
+    }
+
+    .rsvp-card {
+      width: 100%;
+      max-width: 620px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      padding: 2.5rem;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .brand-logo {
+      max-width: 220px;
+      height: auto;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      margin: 0 0 1rem 0;
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.95);
+      letter-spacing: -0.5px;
+    }
+
+    .intro-copy {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0 0 2rem 0;
+      font-weight: 400;
+    }
+
+    .fade-wrapper {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .fade-out {
+      opacity: 0;
+      transform: translateY(-20px);
+      display: none !important;
+    }
+
+    .field-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .field-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text-white);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      font-weight: 400;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--armstrong-blue);
+      background: rgba(0, 0, 0, 0.35);
+      box-shadow: 0 0 0 3px rgba(1, 148, 210, 0.25);
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.35) !important; 
+      opacity: 1 !important;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1rem 2rem;
+      background: var(--text-white);
+      color: #0b4f8c;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      margin-top: 1.25rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-white);
+      border: 1px solid var(--glass-border);
+      margin-top: 1.5rem;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-secondary svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .alert-error {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #f87171;
+    }
+
+    .hidden { 
+      display: none !important; 
+    }
+
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 1rem 0;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+    }
+
+    .success-screen.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .formatted-text {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      font-weight: 400;
+    }
+
+    .folio-box {
+      background: rgba(1, 148, 210, 0.15);
+      border: 1px dashed var(--armstrong-blue);
+      padding: 1.2rem;
+      border-radius: 12px;
+      margin: 1.5rem auto;
+      max-width: 280px;
+    }
+
+    .folio-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+
+    .folio-code {
+      font-size: 1.85rem;
+      font-weight: 600;
+      color: var(--text-white);
+      letter-spacing: 2px;
+    }
+
+    .simulation-note {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.25);
+      margin-top: 2rem;
+      font-style: italic;
+    }
+
+    .success-icon-svg {
+      width: 80px;
+      height: 80px;
+      display: block;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .svg-circle {
+      stroke: #34d399;
+      stroke-width: 3;
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      fill: none;
+      animation: stroke-anim 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .svg-check {
+      stroke: #34d399;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      fill: none;
+      animation: check-anim 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
+    }
+
+    @keyframes stroke-anim { 100% { stroke-dashoffset: 0; } }
+    @keyframes check-anim { 100% { stroke-dashoffset: 0; } }
+
+    .site-footer {
+      flex-shrink: 0;
+      text-align: center;
+      padding: 1rem 0;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.25);
+      width: 100%;
+      font-weight: 400;
+    }
+
+    @media (min-width: 480px) {
+      body { padding: 2rem 2rem 0 2rem; }
+      .rsvp-card { padding: 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="main-content">
+    <div class="rsvp-card" id="capture-target">
+      
+      <div id="registration-block" class="fade-wrapper">
+        <div class="brand-header">
+          <img src="logo_armstrong_blanco.png" alt="Armstrong Logo" class="brand-logo">
+          <h2>REGISTRO</h2>
+          <p class="intro-copy">
+            Estimado colaborador, le invitamos a completar el siguiente formulario con sus datos para validar su acceso exclusivo al próximo evento corporativo de Armstrong.
+          </p>
+        </div>
+
+        <form id="form-armstrong" onsubmit="executeRegistration(event)">
+          <div class="field-group">
+            <label for="user-name">Nombre Completo</label>
+            <input type="text" id="user-name" required placeholder="Ej. Alvaro Sánchez">
+          </div>
+          
+          <div class="field-group">
+            <label for="user-email">Correo Electrónico</label>
+            <input type="email" id="user-email" required placeholder="ejemplo@farmacia.com">
+          </div>
+
+          <div class="field-group">
+            <label for="user-phone">Teléfono Celular / WhatsApp</label>
+            <input type="tel" id="user-phone" required placeholder="Ej. 5512345678">
+          </div>
+
+          <div class="field-group">
+            <label for="user-inst">Farmacia / Institución</label>
+            <input type="text" id="user-inst" required placeholder="Ej. Farmacia del Ahorro">
+          </div>
+
+          <button type="submit" class="btn-submit">Confirmar Registro</button>
+        </form>
+
+        <div id="panel-error-reg" class="alert-error hidden"></div>
+      </div>
+
+      <div id="success-block" class="success-screen">
+        <img src="logo_armstrong_blanco.png" alt="Armstrong Logo" class="brand-logo" style="display: block; margin: 0 auto 2rem auto;">
+        
+        <svg class="success-icon-svg" viewBox="0 0 52 52">
+          <circle class="svg-circle" cx="26" cy="26" r="25" />
+          <path class="svg-check" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+        </svg>
+
+        <h2>¡Registro Confirmado!</h2>
+        
+        <p class="formatted-text" id="success-text-recipient"></p>
+        
+        <div class="folio-box">
+          <div class="folio-title">Folio Personal de Acceso</div>
+          <div class="folio-code" id="lbl-folio">ARM-0000</div>
+        </div>
+
+        <p class="formatted-text">
+          Por favor, conserve este folio, ya que le será requerido<br>
+          para validar su acceso individual el día del evento.
+        </p>
+
+        <p class="formatted-text" style="color: #34d399; margin-top: 1rem;">
+          ✓ El folio de confirmación ha sido enviado<br>
+          a su correo electrónico.
+        </p>
+
+        <button type="button" class="btn-submit btn-secondary" id="btn-download-trigger" onclick="downloadCardAsImage()">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Descargar comprobante
+        </button>
+
+        <p class="simulation-note">Modo Simulación</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    Copyright © Conventions & Pro Meeting. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    function storageRetrieve() {
+      const currentData = localStorage.getItem('armstrong_rsvp');
+      return currentData ? JSON.parse(currentData) : [];
+    }
+
+    function generateRandomFolio() {
+      const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let result = '';
+      for (let i = 0; i < 4; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return `ARM-${result}`;
+    }
+
+    function executeRegistration(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('user-name').value.trim();
+      const email = document.getElementById('user-email').value.trim();
+      const phone = document.getElementById('user-phone').value.trim();
+      const inst = document.getElementById('user-inst').value.trim();
+      
+      const regBlock = document.getElementById('registration-block');
+      const successBlock = document.getElementById('success-block');
+      const errorPanel = document.getElementById('panel-error-reg');
+
+      const dataList = storageRetrieve();
+      
+      // CAMBIO DE LÓGICA: Ahora solo se valida que no se repita el correo electrónico ni el teléfono celular
+      const alreadyRegistered = dataList.some(item => 
+        item.email.toLowerCase() === email.toLowerCase() || 
+        item.phone === phone
+      );
+
+      if (alreadyRegistered) {
+        errorPanel.textContent = "Este correo electrónico o número telefónico ya se encuentra registrado para el evento.";
+        errorPanel.classList.remove('hidden');
+        return;
+      }
+
+      const folioGenerated = generateRandomFolio();
+
+      dataList.push({ name, email, phone, inst, folio: folioGenerated, attended: false });
+      localStorage.setItem('armstrong_rsvp', JSON.stringify(dataList));
+
+      document.getElementById('lbl-folio').textContent = folioGenerated;
+      
+      document.getElementById('success-text-recipient').innerHTML = `
+        Estimado(a) <strong>${name}</strong>,<br>
+        su asistencia ha sido confirmada con éxito.
+      `;
+
+      document.getElementById('btn-download-trigger').setAttribute('data-name', name);
+      document.getElementById('btn-download-trigger').setAttribute('data-folio', folioGenerated);
+
+      regBlock.classList.add('fade-out');
+
+      setTimeout(() => {
+        successBlock.classList.add('visible');
+      }, 400);
+    }
+
+    function downloadCardAsImage() {
+      const downloadBtn = document.getElementById('btn-download-trigger');
+      const doctorName = downloadBtn.getAttribute('data-name') || 'Asistente';
+      const folioCode = downloadBtn.getAttribute('data-folio') || 'ARM-0000';
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 400;
+      const ctx = canvas.getContext('2d');
+
+      const gradient = ctx.createLinearGradient(0, 0, 600, 400);
+      gradient.addColorStop(0, '#0b4f8c');
+      gradient.addColorStop(1, '#0194d2');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 600, 400);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      ctx.font = 'bold 20px Inter, sans-serif';
+      ctx.fillText('ARMSTRONG', 300, 50);
+      
+      ctx.font = '12px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.fillText('COMPROBANTE DE REGISTRO', 300, 80);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.beginPath();
+      ctx.moveTo(80, 110);
+      ctx.lineTo(520, 110);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '500 16px Inter, sans-serif';
+      ctx.fillText(`Estimado(a) ${doctorName},`, 300, 150);
+      ctx.font = '14px Inter, sans-serif';
+      ctx.fillStyle = '#b0c4de';
+      ctx.fillText('su asistencia ha sido confirmada con éxito.', 300, 175);
+
+      ctx.fillStyle = 'rgba(1, 148, 210, 0.2)';
+      ctx.strokeStyle = '#0194d2';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(180, 210, 240, 80, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#b0c4de';
+      ctx.font = '600 11px Inter, sans-serif';
+      ctx.fillText('FOLIO PERSONAL DE ACCESO', 300, 232);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 24px Inter, sans-serif';
+      ctx.fillText(folioCode, 300, 262);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillText('Presente este código digital el día del evento para validar su acceso.', 300, 335);
+
+      try {
+        const imageURL = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageURL;
+        downloadLink.download = `Armstrong_Comprobante_${folioCode}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (err) {
+        alert("Por favor tome captura de pantalla de su folio.");
+      }
+    }
+  </script>
+</body>
+</html>

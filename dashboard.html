@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Armstrong - Panel de Control</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    :root {
+      --armstrong-blue: #0194d2;
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --text-white: #ffffff;
+      --text-muted: #b0c4de;
+      --success-green: #10b981;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      box-sizing: border-box;
+      background: url('bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .site-header {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      flex-shrink: 0;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .brand-logo {
+      max-width: 150px;
+      height: auto;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 30px;
+      background: var(--glass-border);
+    }
+
+    .header-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--text-white);
+      letter-spacing: -0.3px;
+    }
+
+    .btn-pdf {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-white);
+      border: 1px solid var(--glass-border);
+      padding: 0.65rem 1.25rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-pdf:hover {
+      background: #ef4444;
+      border-color: #ef4444;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+
+    .dashboard-container {
+      width: 100%;
+      max-width: 85%;
+      margin: 0 auto;
+      padding: 2.5rem 1rem;
+      flex: 1 0 auto;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      margin-bottom: 2rem;
+      flex-shrink: 0;
+    }
+
+    .search-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (min-width: 768px) {
+      .search-grid {
+        grid-template-columns: 1fr 1.5fr;
+      }
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text-white);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--armstrong-blue);
+    }
+
+    .folio-input-wrapper {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .folio-prefix {
+      padding: 0.85rem 0.4rem 0.85rem 1rem;
+      color: var(--armstrong-blue);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .folio-input {
+      border: none;
+      background: transparent;
+      padding: 0.85rem 1rem 0.85rem 0;
+      color: var(--text-white);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      text-transform: uppercase;
+    }
+
+    .folio-input:focus { outline: none; }
+
+    .status-filters {
+      display: flex;
+      gap: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1rem;
+    }
+
+    .btn-toggle {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-toggle.active {
+      background: var(--armstrong-blue);
+      border-color: var(--armstrong-blue);
+      color: var(--text-white);
+    }
+
+    .table-container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+      table-layout: fixed;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    th {
+      color: var(--text-white);
+      font-weight: 500;
+      padding: 1.2rem 1rem;
+      border-bottom: 1px solid var(--glass-border);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 1.2rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.9);
+      vertical-align: middle;
+      word-wrap: break-word;
+    }
+
+    .badge-folio {
+      background: rgba(1, 148, 210, 0.15);
+      border: 1px dashed var(--armstrong-blue);
+      color: var(--text-white);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .text-secondary-data {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .actions-cell-wrapper {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-action-pro {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+      min-width: 85px;
+      box-sizing: border-box;
+    }
+
+    .btn-edit-white {
+      background: #ffffff;
+      color: #1e293b;
+      border-color: #e2e8f0;
+    }
+    .btn-edit-white:hover {
+      background: #f1f5f9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,255,255,0.15);
+    }
+
+    .btn-print-green {
+      background: var(--success-green);
+      color: #ffffff;
+    }
+    .btn-print-green:hover {
+      background: #059669;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    }
+
+    .btn-save-ready {
+      background: var(--armstrong-blue);
+      color: white;
+    }
+
+    .btn-action-pro svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.5;
+      fill: none;
+      stroke: currentColor;
+    }
+
+    .edit-input {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--armstrong-blue);
+      color: white;
+      padding: 0.4rem;
+      border-radius: 6px;
+      width: 95%;
+      font-size: 0.9rem;
+    }
+
+    .switch-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: pointer;
+    }
+
+    .switch-control {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+    }
+
+    .switch-handle {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .switch-wrapper input { display: none; }
+    .switch-wrapper input:checked + .switch-control { background: var(--success-green); }
+    .switch-wrapper input:checked + .switch-control .switch-handle { left: 20px; }
+
+    .status-label { font-size: 0.85rem; }
+    .status-label.attended { color: #34d399; }
+    .status-label.pending { color: rgba(255, 255, 255, 0.4); }
+
+    .no-results { text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
+    .site-footer { text-align: center; padding: 1.25rem 0; color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; background: rgba(0, 0, 0, 0.2); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-brand">
+      <img src="logo_armstrong_blanco.png" alt="Armstrong" class="brand-logo">
+      <div class="header-divider"></div>
+      <div class="header-title-wrapper">
+        <h1>Panel de Control</h1>
+      </div>
+    </div>
+    <button class="btn-pdf" onclick="exportToPDF()">Exportar Lista (PDF)</button>
+  </header>
+
+  <div class="dashboard-container">
+    <section class="search-panel">
+      <div class="search-grid">
+        <div class="filter-group">
+          <label>Buscar por Folio</label>
+          <div class="folio-input-wrapper">
+            <span class="folio-prefix">ARM-</span>
+            <input type="text" id="txt-search-folio" class="folio-input" placeholder="XXXX" maxlength="4" oninput="filterData()">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Buscar por Nombre o Correo</label>
+          <input type="text" id="txt-search-global" class="search-input" placeholder="Ej. Alvaro Sánchez" oninput="filterData()">
+        </div>
+      </div>
+      <div class="status-filters">
+        <button class="btn-toggle active" id="btn-filter-all" onclick="changeStatusFilter('all')">Todos</button>
+        <button class="btn-toggle" id="btn-filter-pending" onclick="changeStatusFilter('pending')">Por Llegar</button>
+        <button class="btn-toggle" id="btn-filter-attended" onclick="changeStatusFilter('attended')">Ya Asistieron</button>
+      </div>
+    </section>
+
+    <main class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 12%;">Folio</th>
+            <th style="width: 25%;">Asistente</th>
+            <th style="width: 22%;">Contacto</th>
+            <th style="width: 18%;">Farmacia / Institución</th>
+            <th style="width: 10%;">Asistencia</th>
+            <th style="width: 13%;">Acciones</th>
+          </tr>
+        </thead>
+      </table>
+      
+      <div class="table-scroll">
+        <table>
+          <tbody id="table-results-body"></tbody>
+        </table>
+        <div id="div-empty-msg" class="no-results" style="display: none;">No se encontraron registros.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let currentStatusFilter = 'all';
+
+    function storageRetrieve() {
+      let data = localStorage.getItem('armstrong_rsvp');
+      if (!data || data === "[]" || data.includes('"spec":')) {
+        const dummyData = [
+          { folio: "ARM-5K2B", name: "Alvaro Sánchez", email: "alvaro@farmacia.com", phone: "5512345678", inst: "Farmacia del Ahorro", attended: true },
+          { folio: "ARM-9X7W", name: "Beatriz Mendoza", email: "beatriz@farmacia.com", phone: "5598765432", inst: "Farmacias Benavides", attended: false }
+        ];
+        localStorage.setItem('armstrong_rsvp', JSON.stringify(dummyData));
+        return dummyData;
+      }
+      return JSON.parse(data);
+    }
+
+    function changeStatusFilter(status) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.btn-toggle').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('btn-filter-' + status).classList.add('active');
+      filterData();
+    }
+
+    function toggleAttendance(email, checkboxElement) {
+      const allRecords = storageRetrieve(); 
+      allRecords.forEach(r => {
+        if (r.email.toLowerCase() === email.toLowerCase()) r.attended = checkboxElement.checked;
+      });
+      localStorage.setItem('armstrong_rsvp', JSON.stringify(allRecords));
+      filterData(); 
+    }
+
+    function startEdit(index) {
+      filterData(index);
+    }
+
+    function saveEdit(index) {
+      const allRecords = storageRetrieve();
+      allRecords[index].name = document.getElementById(`edit-name-${index}`).value.trim();
+      allRecords[index].email = document.getElementById(`edit-email-${index}`).value.trim();
+      allRecords[index].phone = document.getElementById(`edit-phone-${index}`).value.trim();
+      allRecords[index].inst = document.getElementById(`edit-inst-${index}`).value.trim();
+      
+      localStorage.setItem('armstrong_rsvp', JSON.stringify(allRecords));
+      filterData();
+    }
+
+    // --- MOTOR DE IMPRESIÓN DEL GAFETE ---
+    function printGafete(name, inst) {
+      const nameParts = name.split(" ");
+      const firstName = nameParts[0].toUpperCase();
+      const lastName = nameParts.slice(1).join(" ").toUpperCase() || "";
+
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert("Por favor, permite las ventanas emergentes para poder imprimir el gafete.");
+        return;
+      }
+
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>Imprimir Gafete - ${firstName}</title>
+          <style>
+            @font-face {
+              font-family: 'Habanera Extras 3D';
+              src: url('HabaneraExtras3D.ttf') format('truetype');
+              font-weight: normal;
+              font-style: normal;
+            }
+            
+            @media print {
+              @page { 
+                size: 62.992mm 70.019mm; 
+                margin: 0; 
+              }
+              body { 
+                margin: 0; 
+                padding: 0; 
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+            }
+            
+            body {
+              width: 62.992mm;
+              height: 70.019mm;
+              margin: 0;
+              padding: 0;
+              background-image: url('gafete_Plantilla.png');
+              background-size: cover;
+              background-position: center;
+              background-repeat: no-repeat;
+              font-family: 'Habanera Extras 3D', Arial, sans-serif;
+              position: relative;
+              box-sizing: border-box;
+              overflow: hidden;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            
+            .text-container {
+              position: absolute;
+              top: 2.2cm;
+              left: 0;
+              width: 62.992mm;
+              text-align: center;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            }
+            
+            .first-name {
+              font-size: 32px;
+              line-height: 30px;
+              color: #000000;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .last-name {
+              font-size: 32px;
+              line-height: 30px;
+              color: #000000;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              margin-bottom: 14px; /* Un poco más de espacio antes de la farmacia */
+            }
+            
+            /* AHORA CON HABANERA EXTRAS 3D TAMBIÉN */
+            .pharmacy {
+              font-family: 'Habanera Extras 3D', Arial, sans-serif;
+              font-size: 16px; /* Escalado para una excelente legibilidad en bloque 3D */
+              line-height: 16px;
+              color: #000000;
+              text-transform: uppercase; /* Lo pasamos a mayúsculas para mantener el impacto visual */
+              max-width: 5.8cm;
+              word-wrap: break-word;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="text-container">
+            <div class="first-name">${firstName}</div>
+            <div class="last-name">${lastName}</div>
+            <div class="pharmacy">${inst}</div>
+          </div>
+        </body>
+        </html>
+      `);
+
+      printWindow.document.close();
+
+      printWindow.focus();
+      setTimeout(function() {
+        printWindow.print();
+        printWindow.close();
+      }, 400);
+    }
+
+    function filterData(editingIndex = null) {
+      const allRecords = storageRetrieve();
+      const folioQuery = document.getElementById('txt-search-folio').value.trim().toUpperCase();
+      const globalQuery = document.getElementById('txt-search-global').value.trim().toLowerCase();
+      const tbody = document.getElementById('table-results-body');
+      const emptyMsg = document.getElementById('div-empty-msg');
+      
+      tbody.innerHTML = '';
+      let hasRows = false;
+
+      allRecords.forEach((record, index) => {
+        const baseFolioDigits = record.folio.replace('ARM-', '').toUpperCase();
+        const matchesFolio = baseFolioDigits.includes(folioQuery);
+        const matchesGlobal = record.name.toLowerCase().includes(globalQuery) || record.email.toLowerCase().includes(globalQuery);
+
+        let matchesStatus = true;
+        if (currentStatusFilter === 'attended') matchesStatus = record.attended === true;
+        if (currentStatusFilter === 'pending') matchesStatus = !record.attended;
+
+        if (matchesFolio && matchesGlobal && matchesStatus) {
+          hasRows = true;
+          const tr = document.createElement('tr');
+
+          if (editingIndex === index) {
+            tr.innerHTML = `
+              <td style="width: 12%;"><span class="badge-folio">${record.folio}</span></td>
+              <td style="width: 25%;"><input type="text" id="edit-name-${index}" class="edit-input" value="${record.name}"></td>
+              <td style="width: 22%;">
+                <input type="email" id="edit-email-${index}" class="edit-input" style="margin-bottom:3px;" value="${record.email}">
+                <input type="text" id="edit-phone-${index}" class="edit-input" value="${record.phone}">
+              </td>
+              <td style="width: 18%;"><input type="text" id="edit-inst-${index}" class="edit-input" value="${record.inst}"></td>
+              <td style="width: 10%;">-</td>
+              <td style="width: 13%;">
+                <div class="actions-cell-wrapper">
+                  <button class="btn-action-pro btn-save-ready" onclick="saveEdit(${index})">
+                    <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Listo
+                  </button>
+                </div>
+              </td>
+            `;
+          } else {
+            const isChecked = record.attended ? 'checked' : '';
+            const statusLabel = record.attended ? 'Asistió' : 'Por llegar';
+            const statusClass = record.attended ? 'attended' : 'pending';
+
+            tr.innerHTML = `
+              <td style="width: 12%;"><span class="badge-folio">${record.folio}</span></td>
+              <td style="width: 25%;"><div style="font-weight: 500; color: #fff;">${record.name}</div></td>
+              <td style="width: 22%;">
+                <div>${record.email}</div>
+                <div class="text-secondary-data">Tel: ${record.phone}</div>
+              </td>
+              <td style="width: 18%;"><div>${record.inst}</div></td>
+              <td style="width: 10%;">
+                <label class="switch-wrapper">
+                  <input type="checkbox" ${isChecked} onchange="toggleAttendance('${record.email}', this)">
+                  <div class="switch-control"><div class="switch-handle"></div></div>
+                  <span class="status-label ${statusClass}">${statusLabel}</span>
+                </label>
+              </td>
+              <td style="width: 13%;">
+                <div class="actions-cell-wrapper">
+                  <button class="btn-action-pro btn-edit-white" onclick="startEdit(${index})">
+                    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar
+                  </button>
+                  <button class="btn-action-pro btn-print-green" onclick="printGafete('${record.name}', '${record.inst}')">
+                    <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Gafete
+                  </button>
+                </div>
+              </td>
+            `;
+          }
+          tbody.appendChild(tr);
+        }
+      });
+
+      emptyMsg.style.display = hasRows ? 'none' : 'block';
+    }
+
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'letter');
+      const records = storageRetrieve();
+
+      const logoImg = new Image();
+      logoImg.src = 'logo_armstrong_color.png';
+      logoImg.onload = function() {
+        doc.addImage(logoImg, 'PNG', 216, 40, 180, 50);
+        doc.setFont("Helvetica", "bold").setFontSize(14);
+        doc.text("REPORTE GENERAL DE ASISTENCIA", 306, 125, { align: "center" });
+        
+        const tableBody = records.map(r => [r.folio, r.name, `${r.email}\nTel: ${r.phone}`, r.inst, r.attended ? 'ASISTIÓ' : 'PENDIENTE']);
+        doc.autoTable({
+          startY: 150,
+          head: [['Folio', 'Asistente', 'Contacto', 'Farmacia / Institución', 'Estatus']],
+          body: tableBody,
+          theme: 'striped',
+          headStyles: { fillColor: [11, 79, 140] }
+        });
+        doc.save(`Asistencia_Armstrong.pdf`);
+      };
+    }
+
+    window.addEventListener('DOMContentLoaded', () => filterData());
+  </script>
+</body>
+</html>
