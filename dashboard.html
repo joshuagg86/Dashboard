@@ -381,7 +381,72 @@
     .status-label.pending { color: rgba(255, 255, 255, 0.4); }
 
     .no-results { text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
-    .site-footer { text-align: center; padding: 1.25rem 0; color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; background: rgba(0, 0, 0, 0.2); }
+
+    @font-face {
+      font-family: 'Habanera Extras 3D';
+      src: url('HabaneraExtras3D.ttf') format('truetype');
+    }
+
+    #print-tag-wrapper {
+      display: none;
+    }
+
+    @media print {
+      @page { 
+        size: 62.992mm 70.019mm; 
+        margin: 0; 
+      }
+      body * {
+        display: none !important;
+      }
+      #print-tag-wrapper, #print-tag-wrapper * {
+        display: flex !important;
+      }
+      #print-tag-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 62.992mm;
+        height: 70.019mm;
+        box-sizing: border-box;
+        background-image: url('gafete_Plantilla.png') !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        font-family: 'Habanera Extras 3D', Arial, sans-serif;
+        overflow: hidden;
+      }
+      .print-text-container {
+        position: absolute;
+        top: 2.2cm;
+        left: 0;
+        width: 62.992mm;
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .print-first-name, .print-last-name {
+        font-size: 32px;
+        line-height: 30px;
+        color: #000000;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .print-last-name {
+        margin-bottom: 14px;
+      }
+      .print-pharmacy {
+        font-size: 16px;
+        line-height: 16px;
+        color: #000000;
+        text-transform: uppercase;
+        max-width: 5.8cm;
+        word-wrap: break-word;
+      }
+    }
 
     @media (max-width: 900px) {
       .site-header {
@@ -394,29 +459,19 @@
         flex-direction: column;
         gap: 0.5rem;
       }
-      .header-divider {
-        display: none;
-      }
+      .header-divider { display: none; }
       .dashboard-container {
         max-width: 95%;
         padding: 1rem 0.5rem;
       }
-
       .table-container {
         background: transparent;
         border: none;
         box-shadow: none;
         overflow: visible;
       }
-      
-      table, tfoot, tbody, th, td, tr {
-        display: block !important;
-      }
-      
-      thead {
-        display: none !important; 
-      }
-  
+      table, tfoot, tbody, th, td, tr { display: block !important; }
+      thead { display: none !important; }
       tr {
         background: rgba(15, 23, 42, 0.45) !important;
         backdrop-filter: blur(15px);
@@ -428,7 +483,6 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         box-sizing: border-box;
       }
-      
       td {
         width: 100% !important;
         box-sizing: border-box;
@@ -436,7 +490,6 @@
         border-bottom: none !important;
         text-align: left !important;
       }
-      
       td:nth-of-type(1) {
         display: flex !important;
         align-items: center;
@@ -446,11 +499,9 @@
         margin-bottom: 0.5rem;
       }
       td:nth-of-type(1)::before { content: "Código de Acceso"; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
-      
       td:nth-of-type(2)::before { content: "Asistente"; color: var(--armstrong-blue); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
       td:nth-of-type(3)::before { content: "Datos de Contacto"; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
       td:nth-of-type(4)::before { content: "Farmacia o Sucursal"; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
-      
       td:nth-of-type(5) {
         background: rgba(255, 255, 255, 0.02);
         padding: 0.75rem 0.5rem !important;
@@ -458,7 +509,6 @@
         margin: 0.5rem 0;
       }
       td:nth-of-type(5)::before { content: "Estatus de Entrada: "; color: var(--text-white); font-size: 0.85rem; font-weight: 500; margin-right: 0.5rem; }
-      
       .actions-cell-wrapper {
         margin-top: 0.75rem;
         display: grid;
@@ -466,18 +516,12 @@
         gap: 0.6rem;
         width: 100%;
       }
-      
       .btn-action-pro {
         width: 100% !important;
         min-width: unset !important;
         padding: 0.65rem !important;
       }
-      
-      .edit-input {
-        width: 100% !important;
-        box-sizing: border-box;
-        margin-top: 0.2rem;
-      }
+      .edit-input { width: 100% !important; box-sizing: border-box; margin-top: 0.2rem; }
     }
   </style>
 </head>
@@ -536,6 +580,14 @@
     </main>
   </div>
 
+  <div id="print-tag-wrapper">
+    <div class="print-text-container">
+      <div class="print-first-name" id="tag-first-name"></div>
+      <div class="print-last-name" id="tag-last-name"></div>
+      <div class="print-pharmacy" id="tag-pharmacy"></div>
+    </div>
+  </div>
+
   <script>
     let currentStatusFilter = 'all';
 
@@ -588,82 +640,11 @@
       const firstName = nameParts[0].toUpperCase();
       const lastName = nameParts.slice(1).join(" ").toUpperCase() || "";
 
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        alert("Por favor, permite las ventanas emergentes para poder imprimir el gafete.");
-        return;
-      }
+      document.getElementById('tag-first-name').textContent = firstName;
+      document.getElementById('tag-last-name').textContent = lastName;
+      document.getElementById('tag-pharmacy').textContent = inst;
 
-      printWindow.document.write(`
-        <html>
-        <head>
-          <title>Imprimir Gafete - ${firstName}</title>
-          <style>
-            @font-face {
-              font-family: 'Habanera Extras 3D';
-              src: url('HabaneraExtras3D.ttf') format('truetype');
-              font-weight: normal;
-              font-style: normal;
-            }
-            @media print {
-              @page { size: 62.992mm 70.019mm; margin: 0; }
-              body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            }
-            body {
-              width: 62.992mm;
-              height: 70.019mm;
-              margin: 0;
-              padding: 0;
-              background-image: url('gafete_Plantilla.png');
-              background-size: cover;
-              background-position: center;
-              background-repeat: no-repeat;
-              font-family: 'Habanera Extras 3D', Arial, sans-serif;
-              position: relative;
-              box-sizing: border-box;
-              overflow: hidden;
-              -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-            }
-            .text-container {
-              position: absolute;
-              top: 2.2cm;
-              left: 0;
-              width: 62.992mm;
-              text-align: center;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-            }
-            .first-name { font-size: 32px; line-height: 30px; color: #000000; text-transform: uppercase; letter-spacing: 0.5px; }
-            .last-name { font-size: 32px; line-height: 30px; color: #000000; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
-            .pharmacy {
-              font-family: 'Habanera Extras 3D', Arial, sans-serif;
-              font-size: 16px;
-              line-height: 16px;
-              color: #000000;
-              text-transform: uppercase;
-              max-width: 5.8cm;
-              word-wrap: break-word;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="text-container">
-            <div class="first-name">${firstName}</div>
-            <div class="last-name">${lastName}</div>
-            <div class="pharmacy">${inst}</div>
-          </div>
-        </body>
-        </html>
-      `);
-
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(function() {
-        printWindow.print();
-        printWindow.close();
-      }, 400);
+      window.print();
     }
 
     function filterData(editingIndex = null) {
