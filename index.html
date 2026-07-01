@@ -39,7 +39,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 2rem 0;
+      padding: 1rem 0;
     }
 
     .rsvp-card {
@@ -63,6 +63,7 @@
 
     .brand-logo {
       max-width: 220px;
+      width: 100%;
       height: auto;
       margin-bottom: 1.5rem;
     }
@@ -288,9 +289,33 @@
       font-weight: 400;
     }
 
+    /* --- MEDIA QUERIES RESPONSIVAS FORMULARIO --- */
+    @media (max-width: 600px) {
+      body {
+        padding: 0.5rem;
+      }
+      .rsvp-card {
+        padding: 1.5rem;
+        border-radius: 16px;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      .intro-copy {
+        font-size: 0.85rem;
+      }
+      input {
+        padding: 0.75rem 0.9rem;
+        font-size: 0.9rem;
+      }
+      .btn-submit {
+        padding: 0.85rem 1.5rem;
+        font-size: 0.95rem;
+      }
+    }
+
     @media (min-width: 480px) {
       body { padding: 2rem 2rem 0 2rem; }
-      .rsvp-card { padding: 3rem; }
     }
   </style>
 </head>
@@ -410,7 +435,6 @@
 
       const dataList = storageRetrieve();
       
-      // CAMBIO DE LÓGICA: Ahora solo se valida que no se repita el correo electrónico ni el teléfono celular
       const alreadyRegistered = dataList.some(item => 
         item.email.toLowerCase() === email.toLowerCase() || 
         item.phone === phone

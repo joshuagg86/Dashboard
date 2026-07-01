@@ -201,6 +201,7 @@
       gap: 0.5rem;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       padding-top: 1rem;
+      flex-wrap: wrap;
     }
 
     .btn-toggle {
@@ -311,8 +312,6 @@
     }
     .btn-edit-white:hover {
       background: #f1f5f9;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255,255,255,0.15);
     }
 
     .btn-print-green {
@@ -321,8 +320,6 @@
     }
     .btn-print-green:hover {
       background: #059669;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
     }
 
     .btn-save-ready {
@@ -385,6 +382,103 @@
 
     .no-results { text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
     .site-footer { text-align: center; padding: 1.25rem 0; color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; background: rgba(0, 0, 0, 0.2); }
+
+    @media (max-width: 900px) {
+      .site-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+      .header-brand {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .header-divider {
+        display: none;
+      }
+      .dashboard-container {
+        max-width: 95%;
+        padding: 1rem 0.5rem;
+      }
+
+      .table-container {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        overflow: visible;
+      }
+      
+      table, tfoot, tbody, th, td, tr {
+        display: block !important;
+      }
+      
+      thead {
+        display: none !important; 
+      }
+  
+      tr {
+        background: rgba(15, 23, 42, 0.45) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 16px !important;
+        margin-bottom: 1.2rem !important;
+        padding: 1.25rem !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+      }
+      
+      td {
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 0.4rem 0 !important;
+        border-bottom: none !important;
+        text-align: left !important;
+      }
+      
+      td:nth-of-type(1) {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        padding-bottom: 0.75rem !important;
+        margin-bottom: 0.5rem;
+      }
+      td:nth-of-type(1)::before { content: "Código de Acceso"; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+      
+      td:nth-of-type(2)::before { content: "Asistente"; color: var(--armstrong-blue); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
+      td:nth-of-type(3)::before { content: "Datos de Contacto"; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
+      td:nth-of-type(4)::before { content: "Farmacia o Sucursal"; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 0.15rem; }
+      
+      td:nth-of-type(5) {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 0.75rem 0.5rem !important;
+        border-radius: 8px;
+        margin: 0.5rem 0;
+      }
+      td:nth-of-type(5)::before { content: "Estatus de Entrada: "; color: var(--text-white); font-size: 0.85rem; font-weight: 500; margin-right: 0.5rem; }
+      
+      .actions-cell-wrapper {
+        margin-top: 0.75rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+        width: 100%;
+      }
+      
+      .btn-action-pro {
+        width: 100% !important;
+        min-width: unset !important;
+        padding: 0.65rem !important;
+      }
+      
+      .edit-input {
+        width: 100% !important;
+        box-sizing: border-box;
+        margin-top: 0.2rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -423,21 +517,18 @@
     </section>
 
     <main class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 12%;">Folio</th>
-            <th style="width: 25%;">Asistente</th>
-            <th style="width: 22%;">Contacto</th>
-            <th style="width: 18%;">Farmacia / Institución</th>
-            <th style="width: 10%;">Asistencia</th>
-            <th style="width: 13%;">Acciones</th>
-          </tr>
-        </thead>
-      </table>
-      
       <div class="table-scroll">
         <table>
+          <thead>
+            <tr>
+              <th style="width: 12%;">Folio</th>
+              <th style="width: 25%;">Asistente</th>
+              <th style="width: 22%;">Contacto</th>
+              <th style="width: 18%;">Farmacia / Institución</th>
+              <th style="width: 10%;">Asistencia</th>
+              <th style="width: 13%;">Acciones</th>
+            </tr>
+          </thead>
           <tbody id="table-results-body"></tbody>
         </table>
         <div id="div-empty-msg" class="no-results" style="display: none;">No se encontraron registros.</div>
@@ -492,7 +583,6 @@
       filterData();
     }
 
-    // --- MOTOR DE IMPRESIÓN DEL GAFETE ---
     function printGafete(name, inst) {
       const nameParts = name.split(" ");
       const firstName = nameParts[0].toUpperCase();
@@ -515,20 +605,10 @@
               font-weight: normal;
               font-style: normal;
             }
-            
             @media print {
-              @page { 
-                size: 62.992mm 70.019mm; 
-                margin: 0; 
-              }
-              body { 
-                margin: 0; 
-                padding: 0; 
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }
+              @page { size: 62.992mm 70.019mm; margin: 0; }
+              body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             }
-            
             body {
               width: 62.992mm;
               height: 70.019mm;
@@ -542,10 +622,8 @@
               position: relative;
               box-sizing: border-box;
               overflow: hidden;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
+              -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
             }
-            
             .text-container {
               position: absolute;
               top: 2.2cm;
@@ -557,31 +635,14 @@
               align-items: center;
               justify-content: center;
             }
-            
-            .first-name {
-              font-size: 32px;
-              line-height: 30px;
-              color: #000000;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-            }
-            
-            .last-name {
-              font-size: 32px;
-              line-height: 30px;
-              color: #000000;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-              margin-bottom: 14px; /* Un poco más de espacio antes de la farmacia */
-            }
-            
-            /* AHORA CON HABANERA EXTRAS 3D TAMBIÉN */
+            .first-name { font-size: 32px; line-height: 30px; color: #000000; text-transform: uppercase; letter-spacing: 0.5px; }
+            .last-name { font-size: 32px; line-height: 30px; color: #000000; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
             .pharmacy {
               font-family: 'Habanera Extras 3D', Arial, sans-serif;
-              font-size: 16px; /* Escalado para una excelente legibilidad en bloque 3D */
+              font-size: 16px;
               line-height: 16px;
               color: #000000;
-              text-transform: uppercase; /* Lo pasamos a mayúsculas para mantener el impacto visual */
+              text-transform: uppercase;
               max-width: 5.8cm;
               word-wrap: break-word;
             }
@@ -598,7 +659,6 @@
       `);
 
       printWindow.document.close();
-
       printWindow.focus();
       setTimeout(function() {
         printWindow.print();
@@ -631,15 +691,15 @@
 
           if (editingIndex === index) {
             tr.innerHTML = `
-              <td style="width: 12%;"><span class="badge-folio">${record.folio}</span></td>
-              <td style="width: 25%;"><input type="text" id="edit-name-${index}" class="edit-input" value="${record.name}"></td>
-              <td style="width: 22%;">
+              <td><span class="badge-folio">${record.folio}</span></td>
+              <td><input type="text" id="edit-name-${index}" class="edit-input" value="${record.name}"></td>
+              <td>
                 <input type="email" id="edit-email-${index}" class="edit-input" style="margin-bottom:3px;" value="${record.email}">
                 <input type="text" id="edit-phone-${index}" class="edit-input" value="${record.phone}">
               </td>
-              <td style="width: 18%;"><input type="text" id="edit-inst-${index}" class="edit-input" value="${record.inst}"></td>
-              <td style="width: 10%;">-</td>
-              <td style="width: 13%;">
+              <td><input type="text" id="edit-inst-${index}" class="edit-input" value="${record.inst}"></td>
+              <td>-</td>
+              <td>
                 <div class="actions-cell-wrapper">
                   <button class="btn-action-pro btn-save-ready" onclick="saveEdit(${index})">
                     <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Listo
@@ -653,21 +713,21 @@
             const statusClass = record.attended ? 'attended' : 'pending';
 
             tr.innerHTML = `
-              <td style="width: 12%;"><span class="badge-folio">${record.folio}</span></td>
-              <td style="width: 25%;"><div style="font-weight: 500; color: #fff;">${record.name}</div></td>
-              <td style="width: 22%;">
+              <td><span class="badge-folio">${record.folio}</span></td>
+              <td><div style="font-weight: 500; color: #fff;">${record.name}</div></td>
+              <td>
                 <div>${record.email}</div>
                 <div class="text-secondary-data">Tel: ${record.phone}</div>
               </td>
-              <td style="width: 18%;"><div>${record.inst}</div></td>
-              <td style="width: 10%;">
+              <td><div>${record.inst}</div></td>
+              <td>
                 <label class="switch-wrapper">
                   <input type="checkbox" ${isChecked} onchange="toggleAttendance('${record.email}', this)">
                   <div class="switch-control"><div class="switch-handle"></div></div>
                   <span class="status-label ${statusClass}">${statusLabel}</span>
                 </label>
               </td>
-              <td style="width: 13%;">
+              <td>
                 <div class="actions-cell-wrapper">
                   <button class="btn-action-pro btn-edit-white" onclick="startEdit(${index})">
                     <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar
