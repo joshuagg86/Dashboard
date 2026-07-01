@@ -310,16 +310,10 @@
       color: #1e293b;
       border-color: #e2e8f0;
     }
-    .btn-edit-white:hover {
-      background: #f1f5f9;
-    }
 
     .btn-print-green {
       background: var(--success-green);
       color: #ffffff;
-    }
-    .btn-print-green:hover {
-      background: #059669;
     }
 
     .btn-save-ready {
@@ -382,70 +376,12 @@
 
     .no-results { text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
 
-    @font-face {
-      font-family: 'Habanera Extras 3D';
-      src: url('HabaneraExtras3D.ttf') format('truetype');
-    }
-
-    #print-tag-wrapper {
-      display: none;
-    }
-
-    @media print {
-      @page { 
-        size: 62.992mm 70.019mm; 
-        margin: 0; 
-      }
-      body * {
-        display: none !important;
-      }
-      #print-tag-wrapper, #print-tag-wrapper * {
-        display: flex !important;
-      }
-      #print-tag-wrapper {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 62.992mm;
-        height: 70.019mm;
-        box-sizing: border-box;
-        background-image: url('gafete_Plantilla.png') !important;
-        background-size: cover !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        font-family: 'Habanera Extras 3D', Arial, sans-serif;
-        overflow: hidden;
-      }
-      .print-text-container {
-        position: absolute;
-        top: 2.2cm;
-        left: 0;
-        width: 62.992mm;
-        text-align: center;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      .print-first-name, .print-last-name {
-        font-size: 32px;
-        line-height: 30px;
-        color: #000000;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .print-last-name {
-        margin-bottom: 14px;
-      }
-      .print-pharmacy {
-        font-size: 16px;
-        line-height: 16px;
-        color: #000000;
-        text-transform: uppercase;
-        max-width: 5.8cm;
-        word-wrap: break-word;
-      }
+    #print-iframe {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: none;
+      visibility: hidden;
     }
 
     @media (max-width: 900px) {
@@ -455,10 +391,7 @@
         gap: 1rem;
         text-align: center;
       }
-      .header-brand {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
+      .header-brand { flex-direction: column; gap: 0.5rem; }
       .header-divider { display: none; }
       .dashboard-container {
         max-width: 95%;
@@ -580,13 +513,7 @@
     </main>
   </div>
 
-  <div id="print-tag-wrapper">
-    <div class="print-text-container">
-      <div class="print-first-name" id="tag-first-name"></div>
-      <div class="print-last-name" id="tag-last-name"></div>
-      <div class="print-pharmacy" id="tag-pharmacy"></div>
-    </div>
-  </div>
+  <iframe id="print-iframe"></iframe>
 
   <script>
     let currentStatusFilter = 'all';
@@ -640,11 +567,104 @@
       const firstName = nameParts[0].toUpperCase();
       const lastName = nameParts.slice(1).join(" ").toUpperCase() || "";
 
-      document.getElementById('tag-first-name').textContent = firstName;
-      document.getElementById('tag-last-name').textContent = lastName;
-      document.getElementById('tag-pharmacy').textContent = inst;
+      const iframe = document.getElementById('print-iframe');
+      const iframeDoc = iframe.contentWindow.document;
 
-      window.print();
+      iframeDoc.open();
+      iframeDoc.write(`
+        <html>
+        <head>
+          <title>Imprimir Gafete</title>
+          <style>
+            @font-face {
+              font-family: 'Habanera Extras 3D';
+              src: url('HabaneraExtras3D.ttf') format('truetype');
+            }
+            
+            @media print {
+              @page { 
+                size: 62.992mm 70.019mm; 
+                margin: 0; 
+              }
+              html, body {
+                margin: 0;
+                padding: 0;
+                width: 62.992mm;
+                height: 70.019mm;
+              }
+            }
+            
+            body {
+              width: 62.992mm;
+              height: 70.019mm;
+              margin: 0;
+              padding: 0;
+              background-image: url('gafete_Plantilla.png');
+              background-size: cover;
+              background-position: center;
+              background-repeat: no-repeat;
+              font-family: 'Habanera Extras 3D', Arial, sans-serif;
+              position: relative;
+              box-sizing: border-box;
+              overflow: hidden;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            
+            .text-container {
+              position: absolute;
+              top: 2.2cm;
+              left: 0;
+              width: 62.992mm;
+              text-align: center;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            }
+            
+            .first-name {
+              font-size: 32px;
+              line-height: 30px;
+              color: #000000;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .last-name {
+              font-size: 32px;
+              line-height: 30px;
+              color: #000000;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              margin-bottom: 14px;
+            }
+            
+            .pharmacy {
+              font-size: 16px;
+              line-height: 16px;
+              color: #000000;
+              text-transform: uppercase;
+              max-width: 5.8cm;
+              word-wrap: break-word;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="text-container">
+            <div class="first-name">${firstName}</div>
+            <div class="last-name">${lastName}</div>
+            <div class="pharmacy">${inst}</div>
+          </div>
+        </body>
+        </html>
+      `);
+      iframeDoc.close();
+
+      setTimeout(function() {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 300);
     }
 
     function filterData(editingIndex = null) {
