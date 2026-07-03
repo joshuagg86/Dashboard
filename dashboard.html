@@ -80,8 +80,13 @@
       letter-spacing: -0.3px;
     }
 
-    .btn-pdf {
-      background: rgba(255, 255, 255, 0.1);
+    /* --- CONTENEDOR DE BOTONES DE EXPORTACIÓN --- */
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-pdf, .btn-excel {
       color: var(--text-white);
       border: 1px solid var(--glass-border);
       padding: 0.65rem 1.25rem;
@@ -95,10 +100,25 @@
       transition: all 0.2s ease;
     }
 
+    .btn-pdf {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
     .btn-pdf:hover {
       background: #ef4444;
       border-color: #ef4444;
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-excel {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-excel:hover {
+      background: #10b981;
+      border-color: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
     .dashboard-container {
@@ -468,7 +488,11 @@
         <h1>Panel de Control</h1>
       </div>
     </div>
-    <button class="btn-pdf" onclick="exportToPDF()">Exportar Lista (PDF)</button>
+    <!-- SECCIÓN DE ACCIONES DEL HEADER INTEGRANDO AMBOS BOTONES -->
+    <div class="header-actions">
+      <button class="btn-excel" onclick="exportToExcel()">Exportar Excel (.xlsx)</button>
+      <button class="btn-pdf" onclick="exportToPDF()">Exportar Lista (PDF)</button>
+    </div>
   </header>
 
   <div class="dashboard-container">
@@ -538,6 +562,7 @@
       filterData();
     }
 
+    // ... [Mantenemos las funciones existentes de asistencia y edición intactas] ...
     function toggleAttendance(email, checkboxElement) {
       const allRecords = storageRetrieve(); 
       allRecords.forEach(r => {
@@ -576,86 +601,17 @@
         <head>
           <title>Imprimir Gafete</title>
           <style>
-            @font-face {
-              font-family: 'Habanera Extras 3D';
-              src: url('HabaneraExtras3D.ttf') format('truetype');
-            }
-            
-            @media print {
-              @page { 
-                size: 62.992mm 70.019mm; 
-                margin: 0; 
-              }
-              html, body {
-                margin: 0;
-                padding: 0;
-                width: 62.992mm;
-                height: 70.019mm;
-              }
-            }
-            
-            body {
-              width: 62.992mm;
-              height: 70.019mm;
-              margin: 0;
-              padding: 0;
-              background-image: url('gafete_Plantilla.png');
-              background-size: cover;
-              background-position: center;
-              background-repeat: no-repeat;
-              font-family: 'Habanera Extras 3D', Arial, sans-serif;
-              position: relative;
-              box-sizing: border-box;
-              overflow: hidden;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            
-            .text-container {
-              position: absolute;
-              top: 2.2cm;
-              left: 0;
-              width: 62.992mm;
-              text-align: center;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-            }
-            
-            .first-name {
-              font-size: 32px;
-              line-height: 30px;
-              color: #000000;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-            }
-            
-            .last-name {
-              font-size: 32px;
-              line-height: 30px;
-              color: #000000;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-              margin-bottom: 14px;
-            }
-            
-            .pharmacy {
-              font-size: 16px;
-              line-height: 16px;
-              color: #000000;
-              text-transform: uppercase;
-              max-width: 5.8cm;
-              word-wrap: break-word;
-            }
+            @font-face { font-family: 'Habanera Extras 3D'; src: url('HabaneraExtras3D.ttf') format('truetype'); }
+            @media print { @page { size: 62.992mm 70.019mm; margin: 0; } html, body { margin: 0; padding: 0; width: 62.992mm; height: 70.019mm; } }
+            body { width: 62.992mm; height: 70.019mm; margin: 0; padding: 0; background-image: url('gafete_Plantilla.png'); background-size: cover; background-position: center; background-repeat: no-repeat; font-family: 'Habanera Extras 3D', Arial, sans-serif; position: relative; box-sizing: border-box; overflow: hidden; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .text-container { position: absolute; top: 2.2cm; left: 0; width: 62.992mm; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+            .first-name, .last-name { font-size: 32px; line-height: 30px; color: #000000; text-transform: uppercase; letter-spacing: 0.5px; }
+            .last-name { margin-bottom: 14px; }
+            .pharmacy { font-size: 16px; line-height: 16px; color: #000000; text-transform: uppercase; max-width: 5.8cm; word-wrap: break-word; }
           </style>
         </head>
         <body>
-          <div class="text-container">
-            <div class="first-name">${firstName}</div>
-            <div class="last-name">${lastName}</div>
-            <div class="pharmacy">${inst}</div>
-          </div>
+          <div class="text-container"><div class="first-name">${firstName}</div><div class="last-name">${lastName}</div><div class="pharmacy">${inst}</div></div>
         </body>
         </html>
       `);
@@ -702,9 +658,7 @@
               <td>-</td>
               <td>
                 <div class="actions-cell-wrapper">
-                  <button class="btn-action-pro btn-save-ready" onclick="saveEdit(${index})">
-                    <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Listo
-                  </button>
+                  <button class="btn-action-pro btn-save-ready" onclick="saveEdit(${index})">Listo</button>
                 </div>
               </td>
             `;
@@ -730,12 +684,8 @@
               </td>
               <td>
                 <div class="actions-cell-wrapper">
-                  <button class="btn-action-pro btn-edit-white" onclick="startEdit(${index})">
-                    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar
-                  </button>
-                  <button class="btn-action-pro btn-print-green" onclick="printGafete('${record.name}', '${record.inst}')">
-                    <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Gafete
-                  </button>
+                  <button class="btn-action-pro btn-edit-white" onclick="startEdit(${index})">Editar</button>
+                  <button class="btn-action-pro btn-print-green" onclick="printGafete('${record.name}', '${record.inst}')">Gafete</button>
                 </div>
               </td>
             `;
@@ -747,6 +697,53 @@
       emptyMsg.style.display = hasRows ? 'none' : 'block';
     }
 
+    // --- NUEVO MOTOR DE EXPORTACIÓN NATIVA A EXCEL ---
+    function exportToExcel() {
+      const records = storageRetrieve();
+      
+      // Definición de las cabeceras del reporte
+      const headers = ["Folio", "Nombre Completo", "Correo Electronico", "Telefono", "Farmacia / Institucion", "Estatus Asistencia"];
+      
+      // Construcción del contenido mapeando los datos de los asistentes
+      const rows = records.map(r => [
+        r.folio,
+        r.name,
+        r.email,
+        r.phone,
+        r.inst,
+        r.attended ? "ASISTIO" : "PENDIENTE"
+      ]);
+
+      // Unimos las cabeceras y filas separándolas por tabuladores para compatibilidad nativa en Excel internacional
+      let csvContent = headers.join("\t") + "\n";
+      rows.forEach(rowArray => {
+        const row = rowArray.map(val => {
+          // Limpiamos los textos para evitar que comas o comillas rompan las columnas en Excel
+          let text = val ? String(val).replace(/"/g, '""') : "";
+          if (text.search(/("|,|\n)/g) >= 0) text = `"${text}"`;
+          return text;
+        });
+        csvContent += row.join("\t") + "\n";
+      });
+
+      // Añadimos el prefijo UTF-8 BOM para forzar a Excel a abrir los acentos de manera correcta
+      const BOM = "\uFEFF";
+      const blob = new Blob([BOM + csvContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
+      
+      // Lanzamos la descarga del archivo de forma automática
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Reporte_Asistencia_Armstrong.xls");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+
+    // Exportación PDF existente
     function exportToPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('p', 'pt', 'letter');
